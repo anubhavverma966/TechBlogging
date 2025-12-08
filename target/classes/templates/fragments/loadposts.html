@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <!-- Nothing here, just fragments -->
+</head>
+<body>
+<div class="row" th:fragment="postList">
+    <!-- If no posts -->
+    <div th:if="${#lists.isEmpty(posts)}" class="col-12">
+        <h3 class="display-6 text-center mt-4">No Posts available in this category...</h3>
+    </div>
+
+    <!-- Loop through posts -->
+    <div class="col-md-6 mt-3" th:each="p, iterStat : ${posts}">
+        <div class="card shadow-sm h-100", style="width: 100%; border-radius: 0;">
+            <!-- Blog image -->
+            <img th:src="@{'/blog_pics/' + ${p.pPic}}"
+		     class="card-img-top img-fluid"
+		     alt="Blog Image"
+		     style="height: 300px; object-fit: fit; background-color: #fff; border-radius: 0;">
+
+            <!-- Blog content -->
+            <div class="card-body">
+                <h6 class="fw-bold mb-2" th:text="${p.pTitle}">Post Title</h6>
+                <p class="mb-0 text-muted" th:text="${p.pContent}" />
+            </div>
+
+            <!-- Footer -->
+            <div class="card-footer primary-color text-center">
+                <!-- Edit button -->                
+				<a href="#"
+				   class="btn btn-outline-light btn-sm edit-post-btn"
+				   th:attr="data-id=${p.pid}"
+				   onclick="openEditModal(this.dataset.id)">
+				    <i class="fa fa-pencil"></i>
+				</a>
+                
+
+                <!-- Read more -->
+                <a class="btn btn-outline-light btn-sm mx-1"
+                   th:href="@{'/showBlogPost/' + ${p.pid}}">
+                    Read More
+                </a>
+
+                <!-- Delete -->
+				<a href="#!"
+				   sec:authorize="hasRole('ADMIN')"
+				   class="btn btn-outline-light btn-sm"
+				   th:onclick="|deletePost(${p.pid})|">
+				    <i class="fa fa-trash"></i>
+				</a>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
