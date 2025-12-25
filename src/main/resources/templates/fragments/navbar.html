@@ -21,25 +21,6 @@
                     <a class="nav-link active" href="#" th:href="@{/profilePage}"><span class="fa fa-paste"></span> Blog page</a>
                 </li>
 
-                <!-- <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                       aria-expanded="false">
-                        <span class="fa fa-navicon"></span> Categories
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-				        <li th:each="c, iterStat : ${categories}">
-				            <a class="dropdown-item c-link-1"
-				               th:text="${c.name}"
-				               href="#"
-				               th:onclick="|getPosts1(${c.id}, ${iterStat.index})|">
-				            </a>
-				            
-				            Divider before last
-						    <div class="dropdown-divider" th:if="${iterStat.index == categories.size() - 2}"></div>
-				        </li>
-				    </ul>
-                </li> -->
-
                 <li class="nav-item">
                     <a class="nav-link" href="#"><span class="fa fa-address-book-o"></span> Contact Us</a>
                 </li>

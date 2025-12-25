@@ -1,81 +1,90 @@
 package com.anubhav.techblog.Techblogging.config;
 
+import com.anubhav.techblog.Techblogging.security.JwtAuthenticationFilter;
+import com.anubhav.techblog.Techblogging.security.JwtService;
+import com.anubhav.techblog.Techblogging.security.JwtSilentRefreshFilter;
+import com.anubhav.techblog.Techblogging.service.RefreshTokenService;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-
-import com.anubhav.techblog.Techblogging.security.CustomUserDetails;
-import com.anubhav.techblog.Techblogging.security.CustomUserDetailsService;
-
-import jakarta.servlet.http.HttpSession;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http, DaoAuthenticationProvider provider) throws Exception{
-		http.authenticationProvider(provider);
-		
-		http.authorizeHttpRequests(auth -> 
-			auth.requestMatchers("/", "/registerPage", "/loginPage",
-                    "/css/**", "/js/**", "/pics/**", "/blog_pics/**").permitAll()
-				.requestMatchers("/profilePage/**", "/addPost/**",
-					"/editProfile/**", "/showBlogPost/**", "/loadPosts/**", "/post/**", 
-					"/editPost").authenticated()
-				.requestMatchers("/addCategory", "/deletePost/**").hasRole("ADMIN")
-				.anyRequest().permitAll()
-			);
-		http.formLogin(login ->
-			login.loginPage("/loginPage")
-				 .loginProcessingUrl("/login")
-				 .usernameParameter("email")
-				 .passwordParameter("password")
-				 .successHandler(storeUserInSession())
-				 .failureUrl("/loginPage?error")
-				 .permitAll()
-			);
-		http.logout(logout -> 
-			logout.logoutUrl("/logout")
-				  .logoutSuccessUrl("/loginPage?logout")
-				  .invalidateHttpSession(true)
-				  .deleteCookies("JSESSIONID")
-				  .permitAll()
-			);
-		
-		http.csrf(Customizer.withDefaults());
-		
-		return http.build();
-	}
-	
-	@SuppressWarnings("deprecation")
-	@Bean 
-	DaoAuthenticationProvider daoAuthProvider(CustomUserDetailsService uds, PasswordEncoder encoder) {
-        DaoAuthenticationProvider p = new DaoAuthenticationProvider();
-        p.setUserDetailsService(uds);
-        p.setPasswordEncoder(encoder);
-        return p;
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtSilentRefreshFilter jwtSilentRefreshFilter,
+            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+
+        http
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(sm ->
+                sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                        "/", "/loginPage", "/registerPage", "/register",
+                        "/auth/login", "/logout", "/image/**", "/forgot-password", "/auth/forgot-password",
+                        "/css/**", "/js/**", "/pics/**", "/blog_pics/**", "/reset-password",
+                        "/auth/reset-password"
+                ).permitAll()
+                .requestMatchers("/deletePost/**", "/addCategory/**")
+                .hasRole("ADMIN")
+                .requestMatchers(
+                		"/profilePage/**", "/addPost/**",
+                		"/editProfile/**", "/showBlogPost/**", "/loadPosts/**", "/post/**", 
+                		"/editPost")
+                .authenticated()
+                .anyRequest().denyAll()
+            )
+            .exceptionHandling(ex -> ex
+                    .authenticationEntryPoint((req, res, e) ->
+                        res.sendRedirect("/loginPage")
+                    )
+             )
+            .logout(logout -> logout.disable());;
+            
+
+            http.addFilterBefore(
+            	    jwtSilentRefreshFilter,
+            	    UsernamePasswordAuthenticationFilter.class
+            	);
+
+            http.addFilterBefore(jwtAuthenticationFilter,
+                    UsernamePasswordAuthenticationFilter.class);
+
+
+        return http.build();
+    }
+    
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(
+            JwtService jwtService,
+            UserDetailsService userDetailsService
+    ) {
+        return new JwtAuthenticationFilter(jwtService, userDetailsService);
     }
 
-	
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
-	
-	private AuthenticationSuccessHandler storeUserInSession() {
-        return (request, response, authentication) -> {
-            HttpSession session = request.getSession();
-            CustomUserDetails cud = (CustomUserDetails) authentication.getPrincipal();
-            session.setAttribute("currentUser", cud.getDomainUser());
-            response.sendRedirect("/profilePage");
-        };
+    @Bean
+    public JwtSilentRefreshFilter jwtSilentRefreshFilter(
+            JwtService jwtService,
+            RefreshTokenService refreshTokenService,
+            UserDetailsService userDetailsService
+    ) {
+        return new JwtSilentRefreshFilter(jwtService, refreshTokenService, userDetailsService);
+    }
+
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

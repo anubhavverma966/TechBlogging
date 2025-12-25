@@ -21,9 +21,7 @@
                     <div class="mb-3">
                         <textarea th:field="*{description}" placeholder="Enter Description about Category" rows="4" class="form-control" ></textarea>
                     </div>
-                    <div class="mb-3">
-                    	<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">	                            
-                    </div>
+                    
                     <div class="mb-3">
                         <label>Select Your Pic</label>
                         <input name="picFile" type="file" class="form-control">

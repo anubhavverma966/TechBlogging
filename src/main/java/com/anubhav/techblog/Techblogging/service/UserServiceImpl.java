@@ -76,6 +76,12 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public User getUserByEmail(String Email) {
+		// TODO Auto-generated method stub
+		return userDao.findByEmail(Email).orElse(null);
+	}
+	
+	@Override
 	public User getUserByUserId(int id) {
 		// TODO Auto-generated method stub
 		Optional<User> result = userDao.findById(id);
@@ -120,7 +126,7 @@ public class UserServiceImpl implements UserService {
 	            Files.createDirectories(uploadPath);
 
 	            // Delete old pic only if not default
-	            if (dbUser.getProfile() != null && !dbUser.getProfile().equals("default.png")) {
+	            if (dbUser.getProfile() != null && !dbUser.getProfile().equals("default.png") && !dbUser.getProfile().equals("default3.png")) {
 	                Files.deleteIfExists(uploadPath.resolve(dbUser.getProfile()));
 	            }
 
@@ -145,5 +151,4 @@ public class UserServiceImpl implements UserService {
 	        return false;
 	    }
     }
-
 }

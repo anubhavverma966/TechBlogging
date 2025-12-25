@@ -13,7 +13,7 @@ import com.anubhav.techblog.Techblogging.service.PostService;
 @Controller
 public class HomeController {
 
-	private PostService postService;	
+	private final PostService postService;	
 	@Autowired
 	public HomeController(PostService postService) {
 		super();

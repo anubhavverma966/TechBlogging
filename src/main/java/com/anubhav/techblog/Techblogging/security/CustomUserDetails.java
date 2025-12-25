@@ -67,5 +67,9 @@ public class CustomUserDetails implements UserDetails {
 	public User getDomainUser() {
 		return user;
 	}
+	
+	public int getUserId() {
+        return user.getId();
+    }
 
 }

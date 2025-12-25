@@ -3,9 +3,7 @@
 	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 	<meta charset="UTF-8">
-	<meta name="_csrf" th:content="${_csrf.token}">
-	<meta name="_csrf_header" th:content="${_csrf.headerName}">
-	
+		
 	<title>Profile - TechBlogging</title>
 
     <!-- Bootstrap 5 -->
@@ -121,7 +119,6 @@
 	</nav>
 	
 	<form id="logoutForm" th:action="@{/logout}" method="post" style="display:none;">
-	    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 	</form>
 	
 	<!-- Alert message -->
@@ -273,12 +270,7 @@
 	
 	<script>
 	
-		function csrfHeaders() {
-		    const token  = document.querySelector('meta[name="_csrf"]').content;
-		    const header = document.querySelector('meta[name="_csrf_header"]').content;
-		    return { [header]: token };
-		}
-		
+				
 		document.addEventListener("submit", async function (event) {
 		    const form = event.target.closest("#add-post-form");
 		    if (!form) return;
@@ -290,7 +282,6 @@
 		    try {
 		        const response = await fetch("/addPost", {
 		            method: "POST",
-		            headers: csrfHeaders(),
 		            body: formData
 		        });
 		
@@ -301,28 +292,32 @@
 	        	  Swal.fire({
 	        	    icon: "success",
 	        	    title: "Good Job!",
-	        	    text: "Saved successfully."
+	        	    text: "Saved successfully.",
+	        	    timer: 1500
 	        	  });
 	        	  window.location.reload();
 	        	} else if (data.trim() === "Unauthorized") {
 	        	  Swal.fire({
 	        	    icon: "warning",
 	        	    title: "Unauthorized",
-	        	    text: "Please login first."
+	        	    text: "Please login first.",
+	        	    timer: 1500
 	        	  });
 	        	  window.location.reload();
 	        	} else if (data.trim() === "file-error") {
 	        	  Swal.fire({
 	        	    icon: "error",
 	        	    title: "Error",
-	        	    text: "Failed to save image file."
+	        	    text: "Failed to save image file.",
+	        	    timer: 1500
 	        	  });
 	        	  window.location.reload();
 	        	} else {
 	        	  Swal.fire({
 	        	    icon: "error",
 	        	    title: "Error",
-	        	    text: "Something went wrong! Try again..."
+	        	    text: "Something went wrong! Try again...",
+	        	    timer: 1500
 	        	  });
 	        	  window.location.reload();
 	        	}
@@ -333,7 +328,8 @@
 		        Swal.fire({
 	        	    icon: "error",
 	        	    title: "Error",
-	        	    text: "Something went wrong! Try again..."
+	        	    text: "Something went wrong! Try again...",
+	        	    timer: 1500
 	        	});
 		        window.location.reload();
 		    }
@@ -343,12 +339,7 @@
 	
 	<script>
 	
-		function csrfHeaders() {
-		    const token  = document.querySelector('meta[name="_csrf"]').content;
-		    const header = document.querySelector('meta[name="_csrf_header"]').content;
-		    return { [header]: token };
-		}
-		
+				
 		document.addEventListener("submit", async function (event) {
 		    const form = event.target.closest("#add-categry-form");
 		    if (!form) return;
@@ -360,7 +351,6 @@
 		    try {
 		        const response = await fetch("/addCategory", {
 		            method: "POST",
-		            headers: csrfHeaders(),
 		            body: formData
 		        });
 		
@@ -371,28 +361,32 @@
 	        	  Swal.fire({
 	        	    icon: "success",
 	        	    title: "Good Job!",
-	        	    text: "Category saved successfully."
+	        	    text: "Category saved successfully.",
+	        	    timer: 1500
 	        	  });
 	        	  window.location.reload();
 	        	} else if (data.trim() === "Unauthorized") {
 	        	  Swal.fire({
 	        	    icon: "warning",
 	        	    title: "Unauthorized",
-	        	    text: "Please login first."
+	        	    text: "Please login first.",
+	        	    timer: 1500
 	        	  });
 	        	  window.location.reload();
 	        	} else if (data.trim() === "file-error") {
 	        	  Swal.fire({
 	        	    icon: "error",
 	        	    title: "Error",
-	        	    text: "Failed to save image file."
+	        	    text: "Failed to save image file.",
+	        	    timer: 1500
 	        	  });
 	        	  window.location.reload();
 	        	} else {
 	        	  Swal.fire({
 	        	    icon: "error",
 	        	    title: "Error",
-	        	    text: "Something went wrong! Try again..."
+	        	    text: "Something went wrong! Try again...",
+	        	    timer: 1500
 	        	  });
 	        	  window.location.reload();
 	        	}
@@ -403,7 +397,8 @@
 		        Swal.fire({
 	        	    icon: "error",
 	        	    title: "Error",
-	        	    text: "Something went wrong! Try again..."
+	        	    text: "Something went wrong! Try again...",
+	        	    timer: 1500
 	        	});
 		        window.location.reload();
 		    }
@@ -491,10 +486,7 @@
 		
 		    try {
 		        const resp = await fetch(`/deletePost/${id}`, {
-		            method: "DELETE",
-		            headers: {
-		                "X-CSRF-TOKEN": document.querySelector("input[name='_csrf']").value
-		            }
+		            method: "DELETE"
 		        });
 		
 		        const msg = await resp.text();

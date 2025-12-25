@@ -9,6 +9,7 @@ public interface UserService {
 
 	ResponseEntity<String> saveUser(User theUser, MultipartFile file);
 	User getUserByEmailAndPassword(String email, String password);
+	User getUserByEmail(String Email);
 	boolean updateUser(User theUser, MultipartFile file, User currentUser);
 	User getUserByUserId(int id);
 }

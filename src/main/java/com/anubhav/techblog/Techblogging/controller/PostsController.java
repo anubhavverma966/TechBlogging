@@ -4,6 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,19 +23,21 @@ import com.anubhav.techblog.Techblogging.dto.PostDto;
 import com.anubhav.techblog.Techblogging.entity.Category;
 import com.anubhav.techblog.Techblogging.entity.Post;
 import com.anubhav.techblog.Techblogging.entity.User;
+import com.anubhav.techblog.Techblogging.security.CustomUserDetails;
+import com.anubhav.techblog.Techblogging.service.CategoryService;
 import com.anubhav.techblog.Techblogging.service.PostService;
-
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class PostsController {
 
-	private PostService postService;
+	private final PostService postService;
+	private final CategoryService categoryService;
 	
 	@Autowired
-	public PostsController(PostService postService) {
+	public PostsController(PostService postService, CategoryService categoryService) {
 		super();
 		this.postService = postService;
+		this.categoryService = categoryService;
 	}
 	
 	@GetMapping("/loadPosts")
@@ -52,12 +57,13 @@ public class PostsController {
 	}
 
 	@GetMapping("/showBlogPost/{postId}")
-	public String showBlogPost(@PathVariable("postId") int postId, Model theModel, HttpSession session) {
+	public String showBlogPost(@PathVariable("postId") int postId, Model theModel, Authentication authentication) {
 		
-		User user =(User) session.getAttribute("currentUser");
-		if(user == null)
-			return "redirect:/loginPage";
-		theModel.addAttribute("user", user);
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		theModel.addAttribute("user", userDetails.getDomainUser());
+		
+		List<Category> allCategories = categoryService.getAllCategories();
+		theModel.addAttribute("categories", allCategories);
 		
 		Post showpost = postService.getPostByPostId(postId);
 		theModel.addAttribute("showpost", showpost);
@@ -75,8 +81,9 @@ public class PostsController {
 	public ResponseEntity<String> addPost(@ModelAttribute("post") Post post, 
 						  @RequestParam("cid") int cid,
 						  @RequestParam("pic") MultipartFile file, 
-						  HttpSession session) {
-		User currentUser = (User) session.getAttribute("currentUser");
+						  Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		User currentUser = userDetails.getDomainUser();
         return postService.savePost(post, cid, file, currentUser);
 	}
 	
@@ -93,10 +100,10 @@ public class PostsController {
 	@PostMapping("/editPost")
 	public String editPost(@ModelAttribute Post post,
                          @RequestParam(value = "file", required = false) MultipartFile file,
-                     HttpSession session,
-                     RedirectAttributes redirectAttrs) {
-
-		User currentUser = (User) session.getAttribute("currentUser");
+                     RedirectAttributes redirectAttrs, 
+                     Authentication authentication) {
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		User currentUser = userDetails.getDomainUser();
 		if (currentUser == null) {
 			redirectAttrs.addFlashAttribute("errorMsg", "Please login.");
 			return "redirect:/loginPage";
@@ -114,11 +121,15 @@ public class PostsController {
 		return "redirect:/profilePage";
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping("/deletePost/{id}")
 	@ResponseBody
-	public String deletePost(@PathVariable int id, HttpSession session) {
+	public String deletePost(@PathVariable int id) {
 		
-		User currentUser = (User)session.getAttribute("currentUser");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+		User currentUser = userDetails.getDomainUser();
 		
 		if(currentUser == null)
 			return "Unauthorised";
