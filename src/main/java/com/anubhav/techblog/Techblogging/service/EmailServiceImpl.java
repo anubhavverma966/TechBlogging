@@ -1,5 +1,6 @@
 package com.anubhav.techblog.Techblogging.service;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -17,15 +18,14 @@ import com.sendgrid.helpers.mail.objects.Email;
 public class EmailServiceImpl implements EmailService {
 
     private final SendGrid sendGrid;
-    private final SpringTemplateEngine templateEngine;
+    private final SpringTemplateEngine emailTemplateEngine;
 
     @Value("${sendgrid.from.email}")
     private String fromEmail;
 
-    public EmailServiceImpl(SendGrid sendGrid,
-                            SpringTemplateEngine templateEngine) {
+    public EmailServiceImpl(SendGrid sendGrid, @Qualifier("emailTemplateEngine") SpringTemplateEngine emailTemplateEngine) {
         this.sendGrid = sendGrid;
-        this.templateEngine = templateEngine;
+        this.emailTemplateEngine = emailTemplateEngine;
     }
 
     @Async
@@ -37,7 +37,7 @@ public class EmailServiceImpl implements EmailService {
         context.setVariable("username", to);
 
         String htmlContent =
-                templateEngine.process("email/resetEmail", context);
+                emailTemplateEngine.process("email/resetEmail", context);
 
         Email from = new Email(fromEmail);
         Email toEmail = new Email(to);
