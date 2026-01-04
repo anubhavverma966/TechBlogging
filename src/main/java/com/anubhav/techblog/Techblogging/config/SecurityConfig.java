@@ -3,6 +3,7 @@ package com.anubhav.techblog.Techblogging.config;
 import com.anubhav.techblog.Techblogging.security.JwtAuthenticationFilter;
 import com.anubhav.techblog.Techblogging.security.JwtService;
 import com.anubhav.techblog.Techblogging.security.JwtSilentRefreshFilter;
+import com.anubhav.techblog.Techblogging.security.OAuth2LoginSuccessHandler;
 import com.anubhav.techblog.Techblogging.service.RefreshTokenService;
 
 import org.springframework.context.annotation.Bean;
@@ -22,7 +23,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtSilentRefreshFilter jwtSilentRefreshFilter,
-            JwtAuthenticationFilter jwtAuthenticationFilter) throws Exception {
+			JwtAuthenticationFilter jwtAuthenticationFilter , OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler ) throws Exception {
 
         http
             .csrf(csrf -> csrf.disable())
@@ -34,7 +35,7 @@ public class SecurityConfig {
                         "/", "/loginPage", "/registerPage", "/register",
                         "/auth/login", "/logout", "/image/**", "/forgot-password", "/auth/forgot-password",
                         "/css/**", "/js/**", "/pics/**", "/blog_pics/**", "/reset-password",
-                        "/auth/reset-password"
+                        "/auth/reset-password", "/oauth2/**"
                 ).permitAll()
                 .requestMatchers("/deletePost/**", "/addCategory/**")
                 .hasRole("ADMIN")
@@ -50,7 +51,14 @@ public class SecurityConfig {
                         res.sendRedirect("/loginPage")
                     )
              )
-            .logout(logout -> logout.disable());;
+            .logout(logout -> logout.disable());
+        
+        http
+	        .oauth2Login(oauth -> oauth
+	            .loginPage("/loginPage")
+	            .successHandler(oAuth2LoginSuccessHandler)
+	        );
+
             
 
             http.addFilterBefore(

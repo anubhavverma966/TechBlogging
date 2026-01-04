@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +18,7 @@ import com.anubhav.techblog.Techblogging.dao.RoleDao;
 import com.anubhav.techblog.Techblogging.dao.UserDao;
 import com.anubhav.techblog.Techblogging.entity.Role;
 import com.anubhav.techblog.Techblogging.entity.User;
+import com.anubhav.techblog.Techblogging.security.AuthProviderPolicy;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -151,4 +153,70 @@ public class UserServiceImpl implements UserService {
 	        return false;
 	    }
     }
+
+
+	@Override
+	@Transactional
+	public User findOrCreateOAuthUser(String email, String name, String providerId, String provider) {
+
+	    Optional<User> existingUser = userDao.findByEmail(email);
+
+	    if (existingUser.isPresent()) {
+	        User user = existingUser.get();
+
+	        // 🔗 Link account if not already linked
+	        if (user.getAuthProviderPolicy() == AuthProviderPolicy.LOCAL_ONLY) {
+	            
+	            user.setProvider(provider);
+	            user.setProviderId(providerId);
+	            user.setOauthLinked(true);
+	            if(provider.equalsIgnoreCase("google"))
+	    	    	user.setAuthProviderPolicy(AuthProviderPolicy.LOCAL_AND_GOOGLE);
+	    	    else if(provider.equalsIgnoreCase("azure"))
+	    	    	user.setAuthProviderPolicy(AuthProviderPolicy.LOCAL_AND_AZURE);
+	            return userDao.save(user);
+	        }
+
+	        return user; // already OAuth user
+	    }
+
+	    User user = new User();
+	    user.setEmail(email);
+	    user.setName(name);
+	    user.setProvider(provider);
+	    user.setProviderId(providerId);
+	    user.setOauthLinked(true);
+	    user.setEnabled(true);
+	    
+	    if(provider.equalsIgnoreCase("google"))
+	    	user.setAuthProviderPolicy(AuthProviderPolicy.GOOGLE_ONLY);
+	    else if(provider.equalsIgnoreCase("azure"))
+	    	user.setAuthProviderPolicy(AuthProviderPolicy.AZURE_ONLY);
+
+	    user.addRole(roleDao.findByName("ROLE_USER").orElse(null));
+
+	    return userDao.save(user);
+	}
+	
+	@Override
+	@Transactional
+	public void syncUserRoles(User user, Set<String> roleNames) {
+
+	    for (String roleName : roleNames) {
+	        boolean alreadyHasRole = user.getRoles().stream()
+	                .anyMatch(r -> r.getName().equals(roleName));
+
+	        if (!alreadyHasRole) {
+	            Role role = roleDao.findByName(roleName)
+	                    .orElseThrow(() ->
+	                        new RuntimeException("Role not found: " + roleName)
+	                    );
+	            user.getRoles().add(role);
+	        }
+	    }
+
+	    userDao.save(user);
+	}
+
+
 }

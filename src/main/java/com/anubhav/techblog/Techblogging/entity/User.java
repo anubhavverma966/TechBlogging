@@ -6,8 +6,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.anubhav.techblog.Techblogging.security.AuthProviderPolicy;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -40,31 +44,47 @@ public class User {
 	private String email;
 	
 	@Column(name = "password")
-	@NotNull(message = "is required")
 	private String password;
-	
-	@NotNull(message = "is required")
+
 	@Column(name = "gender")
 	private String gender;
 	
 	@Column(name = "rdate", nullable = false, updatable = false, insertable = false)
 	private Timestamp dateTime;
 	
-	@Column(name = "about")
+	@Column(name = "about", nullable = false)
 	private String about;
 	
 	@Column(name = "profile", nullable = false)
 	private String profile;
+	
+	@Column(name = "provider", nullable = false)
+    private String provider;   // LOCAL / AZURE
+
+    @Column(name = "provider_id")
+    private String providerId; // sub claim
 	
 	@PrePersist
     public void ensureDefaults() {
         if (this.profile == null || this.profile.trim().isEmpty()) {
             this.profile = "default.png";
         }
+        if (this.about == null || this.about.trim().isEmpty()) {
+        	this.about = "Hey there! I m Using Tech Bloging";
+        }
+        
     }
 	
 	@Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 1")
 	private boolean enabled = true;
+	
+	@Column(name = "oauth_linked")
+	private boolean oauthLinked = false;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "auth_provider_policy", nullable = false)
+	private AuthProviderPolicy authProviderPolicy;
+
 	
 	@OneToMany(mappedBy = "user")
 	private List<Post> posts;
@@ -196,6 +216,38 @@ public class User {
 
 	public void setPosts(List<Post> posts) {
 		this.posts = posts;
+	}
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
+
+	public String getProviderId() {
+		return providerId;
+	}
+
+	public void setProviderId(String providerId) {
+		this.providerId = providerId;
+	}
+
+	public boolean isOauthLinked() {
+		return oauthLinked;
+	}
+
+	public void setOauthLinked(boolean oauthLinked) {
+		this.oauthLinked = oauthLinked;
+	}	
+
+	public AuthProviderPolicy getAuthProviderPolicy() {
+		return authProviderPolicy;
+	}
+
+	public void setAuthProviderPolicy(AuthProviderPolicy authProviderPolicy) {
+		this.authProviderPolicy = authProviderPolicy;
 	}
 
 	@Override

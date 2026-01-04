@@ -99,7 +99,7 @@ public class AuthenticationController {
             return ResponseEntity.ok().build();
 
         } catch (AuthenticationException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
         }
     }
 

@@ -28,6 +28,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		User user = userDao.findByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException("no user with email: "+ email));
 		
+		
 		return new CustomUserDetails(user);
 	}
 
