@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.anubhav.techblog</groupId>
 	<artifactId>Techblogging</artifactId>
-	<version>v2.0.0</version>
+	<version>v3.0.0</version>
 	<name>Techblogging</name>
-	<description>Rebuilding My Old Project with JWT Auth Feature</description>
+	<description>Adding the OAuth2.0 features</description>
 	<url/>
 	<licenses>
 		<license/>
