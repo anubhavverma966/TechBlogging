@@ -12,20 +12,49 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
-  javaVersion: '21'
+  JAVA_VERSION: '21'
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2
+  APP_NAME: techblog-app-prod
+  RESOURCE_GROUP: techblog-rg
+  SERVICE_CONNECTION: azure.techblog-conn
 
 steps:
-- task: Maven@3
+
+# 1️⃣ Checkout code
+- checkout: self
+  clean: true
+
+# 2️⃣ Cache Maven dependencies
+- task: Cache@2
+  inputs:
+    key: 'maven | "$(Agent.OS)" | **/pom.xml'
+    restoreKeys: |
+      maven | "$(Agent.OS)"
+    path: $(MAVEN_CACHE_FOLDER)
+
+# 3️⃣ Set up Java 17
+- task: JavaToolInstaller@0
+  inputs:
+    versionSpec: $(JAVA_VERSION)
+    jdkArchitectureOption: x64
+    jdkSourceOption: PreInstalled
+
+# 4️⃣ Build Spring Boot app
+- task: Maven@4
   inputs:
     mavenPomFile: 'pom.xml'
     goals: 'clean package'
+    options: '-DskipTests'
     javaHomeOption: 'JDKVersion'
-    jdkVersionOption: '1.21'
-    mavenVersionOption: 'Default'
-    publishJUnitResults: true
+    jdkVersionOption: '1.$(JAVA_VERSION)'
+    mavenOptions: '-Xmx1024m'
+    publishJUnitResults: false
 
+# 5️⃣ Deploy to Azure App Service (Linux)
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: 'azure-techblog-conn'
-    appName: 'techblog-app-prod'
-    package: '$(System.DefaultWorkingDirectory)/**/target/*.jar'
+    azureSubscription: $(SERVICE_CONNECTION)
+    appType: webAppLinux
+    appName: $(APP_NAME)
+    resourceGroupName: $(RESOURCE_GROUP)
+    package: '$(System.DefaultWorkingDirectory)/target/*.jar'
