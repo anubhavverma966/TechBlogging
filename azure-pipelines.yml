@@ -20,7 +20,7 @@ stages:
     - checkout: self
     - task: AzureCLI@2
       inputs:
-        azureSubscription: 'azure-techblog-conn'
+        azureSubscription: 'azure.techblog-conn'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
@@ -29,7 +29,7 @@ stages:
     - task: Docker@2
       displayName: Build & Push Image
       inputs:
-        containerRegistry: azure-techblog-conn
+        containerRegistry: azure.techblog-conn
         repository: $(IMAGE_NAME)
         command: buildAndPush
         Dockerfile: Dockerfile
@@ -39,7 +39,7 @@ stages:
     - task: AzureCLI@2
       displayName: Deploy to Container App
       inputs:
-        azureSubscription: azure-techblog-conn
+        azureSubscription: azure.techblog-conn
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
