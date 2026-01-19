@@ -72,6 +72,12 @@ public class User {
         if (this.about == null || this.about.trim().isEmpty()) {
         	this.about = "Hey there! I m Using Tech Bloging";
         }
+        if (this.authProviderPolicy == null || this.authProviderPolicy.toString().trim().isEmpty()) {
+        	this.authProviderPolicy = AuthProviderPolicy.LOCAL_ONLY;
+        }
+        if (this.provider == null || this.provider.trim().isEmpty()) {
+        	this.provider = "LOCAL";
+        }
         
     }
 	

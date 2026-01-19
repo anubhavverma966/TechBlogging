@@ -10,9 +10,9 @@
 	</parent>
 	<groupId>com.anubhav.techblog</groupId>
 	<artifactId>Techblogging</artifactId>
-	<version>v3.0.0</version>
+	<version>v4.0.0</version>
 	<name>Techblogging</name>
-	<description>Adding the OAuth2.0 features</description>
+	<description>Adding features for Containerization and Prod Deployemeny</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -51,8 +51,8 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
+		  	<groupId>org.springframework.boot</groupId>
+		  	<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
@@ -80,12 +80,6 @@
 		    <artifactId>spring-boot-starter-oauth2-client</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<scope>runtime</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
@@ -111,6 +105,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-compiler-plugin</artifactId>
+			    <configuration>
+			        <source>21</source>
+			        <target>21</target>
+			    </configuration>
 			</plugin>
 		</plugins>
 	</build>

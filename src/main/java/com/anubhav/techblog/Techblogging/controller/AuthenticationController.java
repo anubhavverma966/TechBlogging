@@ -181,10 +181,10 @@ public class AuthenticationController {
 	                passwordResetTokenService.createToken(user);
 
 	        // Build reset link
-	        String resetLink =
-	                "http://localhost:8080/reset-password?token=" + token;
+	        String resetEndpoint =
+	                "/reset-password?token=" + token;
 
-	        emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
+	        emailService.sendPasswordResetEmail(user.getEmail(), resetEndpoint);
 
 
 	    } catch (Exception ex) {

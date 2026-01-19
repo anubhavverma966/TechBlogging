@@ -19,6 +19,17 @@
             background-color: #7e57c2;
             clip-path: polygon(0 0, 100% 0, 100% 97%, 67% 100%, 33% 98%, 0 100%);
         }
+        .highlight-nav {
+			    background-color: white;
+			    color: #7e57c2 !important;
+			    border-radius: 20px;
+			    padding: 6px 14px;
+			    font-weight: 600;
+			}
+			
+			.highlight-nav:hover {
+			    background-color: #f2eaff;
+			}
         .c-link.active {
             color: white;
         }
@@ -55,16 +66,16 @@
 	        <!-- Navbar content -->
 	        <div class="collapse navbar-collapse" id="navbarSupportedContent">
 	            <!-- Left items -->
-	            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+	            <ul class="navbar-nav d-flex flex-row gap-2 me-auto mb-2 mb-lg-0">
 	
-	                <li class="nav-item active">
-	                    <a class="nav-link" th:href="@{/profilePage}">
+	                <li class="nav-item">
+	                    <a class="nav-link active" th:href="@{/profilePage}">
 	                        <span class="fa fa-paste"></span> Blog Page
 	                    </a>
 	                </li>
 	
 	                <li class="nav-item dropdown">
-	                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+	                    <a class="nav-link active dropdown-toggle" href="#" id="navbarDropdown"
 	                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
 	                        <span class="fa fa-navicon"></span> Categories
 	                    </a>
@@ -80,19 +91,19 @@
 	                </li>
 	
 	                <li class="nav-item">
-	                    <a class="nav-link" href="#">
+	                    <a class="nav-link active" href="#">
 	                        <span class="fa fa-address-book-o"></span> Contact Us
 	                    </a>
 	                </li>
 	
 	                <li class="nav-item">
-	                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#addModal">
+	                    <a class="nav-link active highlight-nav" href="#" data-bs-toggle="modal" data-bs-target="#addModal">
 	                        <span class="fa fa-paper-plane-o"></span> Add Posts
 	                    </a>
 	                </li>
 	
 	                <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-	                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
+	                    <a class="nav-link active highlight-nav" href="#" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
 	                        <span class="fa fa-cogs"></span> Add Categories
 	                    </a>
 	                </li>
@@ -101,13 +112,13 @@
 	            <!-- Right items -->
 	            <ul class="navbar-nav ms-auto">
 	                <li class="nav-item">
-	                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
+	                    <a class="nav-link active" href="#" data-bs-toggle="modal" data-bs-target="#profileModal">
 	                        <span class="fa fa-user-circle"></span>
 	                        <span th:text="${currentUser.name}"></span>
 	                    </a>
 	                </li>
 	                <li class="nav-item">
-					    <a class="nav-link" href="#" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
+					    <a class="nav-link active" href="#" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
 					        <span class="fa fa-sign-out"></span> Logout
 					    </a>
 					</li>

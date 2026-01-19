@@ -1,13 +1,17 @@
+<<<<<<< HEAD
 # Maven
 # Build your Java project and run tests with Apache Maven.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
+=======
+>>>>>>> ea5575b (ci: containerization and ACA deployment readiness)
 trigger:
   branches:
     include:
       - master
 
+<<<<<<< HEAD
 pool:
   vmImage: ubuntu-latest
 
@@ -58,3 +62,42 @@ steps:
     appName: $(APP_NAME)
     resourceGroupName: $(RESOURCE_GROUP)
     package: '$(System.DefaultWorkingDirectory)/target/*.jar'
+=======
+variables:
+  ACR_NAME: techblogacr
+  IMAGE_NAME: techblog
+  RESOURCE_GROUP: rg-techblog-prod
+  CONTAINER_APP: techblog-app
+
+stages:
+- stage: BuildAndDeploy
+  jobs:
+  - job: Build
+    pool:
+      vmImage: ubuntu-latest
+
+    steps:
+    - checkout: self
+
+    - task: Docker@2
+      displayName: Build & Push Image
+      inputs:
+        containerRegistry: azure-techblog-conn
+        repository: $(IMAGE_NAME)
+        command: buildAndPush
+        Dockerfile: Dockerfile
+        tags: |
+          $(Build.BuildId)
+
+    - task: AzureCLI@2
+      displayName: Deploy to Container App
+      inputs:
+        azureSubscription: azure-techblog-conn
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az containerapp update \
+            --name $(CONTAINER_APP) \
+            --resource-group $(RESOURCE_GROUP) \
+            --image $(ACR_NAME).azurecr.io/$(IMAGE_NAME):$(Build.BuildId)
+>>>>>>> ea5575b (ci: containerization and ACA deployment readiness)

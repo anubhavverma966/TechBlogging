@@ -19,19 +19,24 @@ public class EmailServiceImpl implements EmailService {
 
     private final SendGrid sendGrid;
     private final SpringTemplateEngine emailTemplateEngine;
+    private final String baseUrl;
 
     @Value("${sendgrid.from.email}")
     private String fromEmail;
 
-    public EmailServiceImpl(SendGrid sendGrid, @Qualifier("emailTemplateEngine") SpringTemplateEngine emailTemplateEngine) {
+    public EmailServiceImpl(SendGrid sendGrid, 
+    						@Qualifier("emailTemplateEngine") SpringTemplateEngine emailTemplateEngine, 
+    						@Value("${reset-link.base.uri}") String baseUrl) {
         this.sendGrid = sendGrid;
         this.emailTemplateEngine = emailTemplateEngine;
+        this.baseUrl = baseUrl;
     }
 
     @Async
     @Override
-    public void sendPasswordResetEmail(String to, String resetLink) {
+    public void sendPasswordResetEmail(String to, String resetEndpoint) {
 
+    	String resetLink = baseUrl + resetEndpoint;
         Context context = new Context();
         context.setVariable("resetLink", resetLink);
         context.setVariable("username", to);
