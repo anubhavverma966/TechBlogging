@@ -18,6 +18,13 @@ stages:
 
     steps:
     - checkout: self
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: 'azure-techblog-conn'
+        scriptType: 'bash'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az account show
 
     - task: Docker@2
       displayName: Build & Push Image
