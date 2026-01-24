@@ -1,0 +1,21 @@
+name: ACA Warmup Ping
+
+on:
+  schedule:
+    # Every 10 min between 08:30–21:30 IST (03:00–16:00 UTC)
+    - cron: "*/10 3-16 * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Ping application
+        run: |
+          curl -m 10 https://techblog-app.salmonglacier-66f5d6ad.southeastasia.azurecontainerapps.io/actuator/health || true
