@@ -1,0 +1,34 @@
+name: MySQL Scheduler
+
+on:
+  schedule:
+    # Start at 08:00 IST = 02:30 UTC
+    - cron: "30 2 * * *"
+    # Stop at 00:00 IST = 18:30 UTC
+    - cron: "30 18 * * *"
+
+  workflow_dispatch:
+
+jobs:
+  control:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Start MySQL
+        if: github.event.schedule == '50 2 * * *'
+        run: |
+          az mysql flexible-server start \
+            --name techbloggin-mysql \
+            --resource-group rg-techblog-prod
+
+      - name: Stop MySQL
+        if: github.event.schedule == '00 16 * * *'
+        run: |
+          az mysql flexible-server stop \
+            --name techbloggin-mysql \
+            --resource-group rg-techblog-prod
