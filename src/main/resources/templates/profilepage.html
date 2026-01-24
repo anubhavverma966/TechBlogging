@@ -20,16 +20,18 @@
             clip-path: polygon(0 0, 100% 0, 100% 97%, 67% 100%, 33% 98%, 0 100%);
         }
         .highlight-nav {
-			    background-color: white;
-			    color: #7e57c2 !important;
-			    border-radius: 20px;
-			    padding: 6px 14px;
-			    font-weight: 600;
-			}
-			
-			.highlight-nav:hover {
-			    background-color: #f2eaff;
-			}
+		    background-color: white;
+		    color: #7e57c2 !important;
+		    border-radius: 20px;
+		    padding: 6px 14px;
+		    font-weight: 600;
+		    display: inline-block;
+   			width: auto;
+		}
+		
+		.highlight-nav:hover {
+		    background-color: #f2eaff;
+		}
         .c-link.active {
             color: white;
         }
@@ -66,7 +68,7 @@
 	        <!-- Navbar content -->
 	        <div class="collapse navbar-collapse" id="navbarSupportedContent">
 	            <!-- Left items -->
-	            <ul class="navbar-nav d-flex flex-row gap-2 me-auto mb-2 mb-lg-0">
+	            <ul class="navbar-nav d-flex flex-column flex-lg-row gap-2 me-auto mb-2 mb-lg-0">
 	
 	                <li class="nav-item">
 	                    <a class="nav-link active" th:href="@{/profilePage}">

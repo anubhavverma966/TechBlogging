@@ -39,6 +39,8 @@
 		    border-radius: 20px;
 		    padding: 6px 14px;
 		    font-weight: 600;
+		    display: inline-block;
+    		width: auto;
 		}
 		
 		.highlight-nav:hover {
@@ -84,7 +86,7 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav d-flex flex-row gap-2 me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav d-flex flex-column flex-lg-row gap-2 me-auto mb-2 mb-lg-0">
 
                 <li class="nav-item">
                     <a class="nav-link active" style="color: white;" th:href="@{/profilePage}">
