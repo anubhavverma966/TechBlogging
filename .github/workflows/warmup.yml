@@ -3,6 +3,7 @@ name: ACA Warmup Ping
 on:
   schedule:
     - cron: '*/10 3-16 * * *'
+  workflow_dispatch:
 
 
 jobs:
