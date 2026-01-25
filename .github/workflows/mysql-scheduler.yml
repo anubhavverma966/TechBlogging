@@ -3,9 +3,9 @@ name: MySQL Scheduler
 on:
   schedule:
     # Start at 08:20 IST = 02:50 UTC
-    - cron: "50 2 * * *"
+    - cron: '50 2 * * *'
     # Stop at 21:30 IST = 16:00 UTC
-    - cron: "00 16 * * *"
+    - cron: '00 16 * * *'
 
   workflow_dispatch:
 
